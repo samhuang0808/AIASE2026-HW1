@@ -23,14 +23,18 @@ pip install mermaid-filter
 pip install -r requirements.txt
 ```
 ## 4. 執行渲染
-請確保位於專案根目錄（包含 `content.md` 的位置），並於終端機執行以下指令。輸出結果將儲存於 `output/` 資料夾：
+建議於具備 Node.js 環境的 Sandbox 執行以獲得完整圖表。若本地端缺乏濾鏡，可改用以下指令產出基礎成果：
 
 ```bash
-# 建立輸出資料夾
+# 建立輸出目錄
 mkdir -p output
 
-# 執行轉檔指令 (優先渲染為 HTML 以獲得最佳相容性與圖表呈現)
+# 方案 A: 完整渲染 (含流程圖，需已安裝 mermaid-filter)
 pandoc content.md -o output/output.html --filter mermaid-filter
+
+# 方案 B: 基礎渲染 (若濾鏡安裝失敗時使用)
+# 註：此方案流程圖將以原始碼呈現
+pandoc content.md -o output/output.html
 ```
 ## 5. 預期輸出
 渲染完成後，預期的成果應包含以下內容：
