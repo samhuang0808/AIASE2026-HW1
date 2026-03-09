@@ -1,0 +1,11 @@
+name: Homework Check
+on: [push]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Verify Files
+        run: |
+          ls -l content.md
+          ls -l flowchart.png
