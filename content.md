@@ -52,7 +52,7 @@ def extract_features(signal, fs=6000):
 ```
 ## 4. 雙案場數據鏈架構 (Mermaid)
 
-<img src="flowchart-1.png" width="600">
+<img src="flowchart.png" width="600">
 
 ## 5. 開發進度與商業路徑
 本計畫採取「階梯式滲透」戰略，利用雙案場建立的物理特徵護城河，達成比國際大廠更快的投資報酬回收 (ROI)。
