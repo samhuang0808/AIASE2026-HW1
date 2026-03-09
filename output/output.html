@@ -1,0 +1,165 @@
+<h1 id="智慧製造真空設備-phm-預測性維護方案">智慧製造真空設備 PHM
+預測性維護方案</h1>
+<blockquote>
+<p><strong>主題</strong>：基於物理特徵與雙案場實證之邊緣 AI 診斷系統</p>
+</blockquote>
+<hr />
+<h2 id="市場痛點">1. 市場痛點</h2>
+<ul>
+<li><strong>非預期停機損失</strong>：一旦設備發生無預警故障，每小時損失高達數十萬至數百萬元
+。</li>
+<li><strong>預防性維護浪費</strong>：現行定期大修（PM）模式，導致許多運轉良好的設備被提早拆解
+。</li>
+<li><strong>診斷透明度不足</strong>：現有方案多僅停留在數據可視化，而非能告知故障點的診斷自動化
+。</li>
+<li><strong>系統孤島與高昂成本</strong>：大廠 PHM
+方案多限於自家品牌且與維護合約高度綑綁，缺乏整合彈性 。</li>
+<li><strong>數據隱私與資安隔閡</strong>：半導體廠內部數據極為敏感，傳統雲端
+AI 方案與廠方資安政策存在衝突 。</li>
+</ul>
+<h2 id="核心技術規格">2. 核心技術規格</h2>
+<p>本系統具備高採樣率與內建濾波技術，確保捕捉早期失效信號 。</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">項目</th>
+<th style="text-align: left;">規格參數</th>
+<th style="text-align: left;">備註</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">取樣頻寬</td>
+<td style="text-align: left;">6,000 Hz</td>
+<td style="text-align: left;">精準捕捉軸承早期高頻微小失效信號</td>
+</tr>
+<tr>
+<td style="text-align: left;">導入週期</td>
+<td style="text-align: left;">8 週極速導入</td>
+<td style="text-align: left;">安裝首日即啟動監控，8
+週內完成診斷模型微調</td>
+</tr>
+<tr>
+<td style="text-align: left;">硬體防護</td>
+<td style="text-align: left;">IP65 等級</td>
+<td
+style="text-align: left;">確保在切削液與高溫粉塵環境下的長期穩定性</td>
+</tr>
+</tbody>
+</table>
+<h2 id="系統診斷邏輯">3. 系統診斷邏輯</h2>
+<h3 id="技術特點">3.1 技術特點</h3>
+<ul>
+<li><strong>超寬頻感測技術</strong>：使用具備極高頻寬與平坦頻率響應的專用震動感測器，專為
+CbM 設計 。</li>
+<li><strong>高速序列通訊</strong>：建立 2,000,000 bps 的超高鮑率 UART
+通訊協議 。</li>
+<li><strong>進階數位訊號處理 (DSP)</strong>：
+<ul>
+<li><strong>包絡分析 (Envelope
+Analysis)</strong>：解調出淹沒在低頻噪音中的高頻微弱撞擊聲。</li>
+<li><strong>快速傅立葉轉換
+(FFT)</strong>：將時域波形轉換成頻域（Hz）進行特徵分析 。</li>
+</ul></li>
+<li><strong>即時異常檢測</strong>：萃取出最乾淨的「各倍頻振幅
+(gE)」與「RMS 總值」 。</li>
+</ul>
+<h3 id="邊緣運算程式碼範例-python">3.2 邊緣運算程式碼範例 (Python)</h3>
+<p>以下為模擬從 UART 讀取振動數據並執行 FFT 特徵提取的邏輯：</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> serial</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 配置高速 UART 通訊 (2,000,000 bps)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_vibration_data(port<span class="op">=</span><span class="st">&#39;/dev/ttyAMA0&#39;</span>):</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    ser <span class="op">=</span> serial.Serial(port, <span class="dv">2000000</span>, timeout<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 讀取 1024 bytes 原始振動數據</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    raw_data <span class="op">=</span> ser.read(<span class="dv">1024</span>) </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> np.frombuffer(raw_data, dtype<span class="op">=</span>np.int16)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> data</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 執行 FFT 轉換與特徵提取</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> extract_features(signal, fs<span class="op">=</span><span class="dv">6000</span>):</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 計算 RMS 總值與執行快速傅立葉轉換</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    rms <span class="op">=</span> np.sqrt(np.mean(signal<span class="op">**</span><span class="dv">2</span>))</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    fft_result <span class="op">=</span> np.<span class="bu">abs</span>(np.fft.fft(signal))</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">&quot;RMS&quot;</span>: rms, <span class="st">&quot;FFT_Peak&quot;</span>: np.<span class="bu">max</span>(fft_result)}</span></code></pre></div>
+<h2 id="雙案場數據鏈架構-mermaid">4. 雙案場數據鏈架構 (Mermaid)</h2>
+<pre class="mermaid"><code>
+graph TD
+
+    A[案場 A: 真空泵製造廠] --&gt;|獲取失效標籤| C{先驗物理特徵庫}
+
+    B[案場 B: 精密工具機廠] --&gt;|環境雜訊去噪| C
+
+    C --&gt; D[終端客戶產線]
+
+    D --&gt; E[裝機即預警]</code></pre>
+<h2 id="開發進度與商業路徑">5. 開發進度與商業路徑</h2>
+<p>本計畫採取「階梯式滲透」戰略，利用雙案場建立的物理特徵護城河，達成比國際大廠更快的投資報酬回收
+(ROI)。</p>
+<h3 id="階段性里程碑">5.1 階段性里程碑</h3>
+<p>我們將開發流程分為四個關鍵階段，確保在進入高階半導體市場前已具備極強的環境適應力：</p>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>階段
+A：雙案場技術硬化 (M1 - M4)</strong>
+深入真空泵製造廠（OEM）獲取極限失效數據，並在精密工具機廠的強雜訊環境中優化濾波演算法。</label></li>
+<li><label><input type="checkbox" checked="" /><strong>階段
+B：產品優化與小規模確認 (M5 - M8)</strong> 感測器機構件升級至
+<strong>IP65
+防護等級</strong>，並開發「物理失效特徵自動識別庫」，降低對人工分析的依賴。</label></li>
+<li><label><input type="checkbox" /><strong>階段 C：客戶端動態生產確認
+(M9 - M10)</strong>
+正式移師至終端客戶（如半導體封裝廠）產線，驗證模型在動態負荷下的穩定性，實現「8
+週極速導入」的商業承諾。</label></li>
+<li><label><input type="checkbox" /><strong>階段 D：規模化擴散與高階滲透
+(M11+)</strong>
+憑藉「免上雲、免長學習期」的資安與效率優勢，從中部傳產集群橫向複製，最終滲透半導體大廠市場。</label></li>
+</ul>
+<h3 id="營運時間規劃表-timeline">5.2 營運時間規劃表 (Timeline)</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">期間</th>
+<th style="text-align: left;">發展階段</th>
+<th style="text-align: left;">技術與商業里程碑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>M1 - M4</strong></td>
+<td style="text-align: left;">雙案場硬化</td>
+<td style="text-align: left;">完成 OEM 與 Tooling
+數據對齊，建立首批特徵標籤庫。</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>M5 - M8</strong></td>
+<td style="text-align: left;">產品優化</td>
+<td style="text-align: left;">硬體加固至
+IP65，算法自動化以降低維護成本。</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>M9 - M10</strong></td>
+<td style="text-align: left;">動態驗證</td>
+<td style="text-align: left;">於變動工況下達成 8 週內完成 AI
+診斷模型微調。</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>M11 - M12</strong></td>
+<td style="text-align: left;">標準化準備</td>
+<td style="text-align: left;">建立標準化布署 SOP，並取得 2-3
+家標竿客戶採購意向書。</td>
+</tr>
+</tbody>
+</table>
+<hr />
